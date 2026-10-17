@@ -310,10 +310,20 @@ app.get('/admin', (req, res) => {
     `);
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
-bot.launch().then(() => console.log("Bot and Admin Dashboard are online..."));
+// ==================== START SERVER & BOT ====================
 
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+});
+
+bot.launch().then(() => {
+    console.log("Telegram bot is running...");
+}).catch((err) => {
+    console.error("Bot launch error:", err);
+});
+
+// Graceful shutdown handling
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
-           
