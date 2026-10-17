@@ -310,18 +310,24 @@ app.get('/admin', (req, res) => {
     `);
 });
 
-// ==================== START SERVER & BOT ====================
+// ==================== START SERVER & WEBHOOK BOT ====================
 
 const PORT = process.env.PORT || 3000;
 
+// Setup Telegram webhook route directly on Express
+app.use(bot.webhookCallback('/telegram-webhook'));
+
+// Set the webhook URL with Telegram automatically when server boots
+const RENDER_URL = process.env.RENDER_EXTERNAL_URL; // Render automatically provides this environment variable
+if (RENDER_URL) {
+    bot.telegram.setWebhook(`${RENDER_URL}/telegram-webhook`);
+    console.log(`Telegram webhook set to: ${RENDER_URL}/telegram-webhook`);
+} else {
+    console.log("Warning: RENDER_EXTERNAL_URL not found. Make sure to configure your webhook manually if needed.");
+}
+
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
-});
-
-bot.launch().then(() => {
-    console.log("Telegram bot is running...");
-}).catch((err) => {
-    console.error("Bot launch error:", err);
 });
 
 // Graceful shutdown handling
